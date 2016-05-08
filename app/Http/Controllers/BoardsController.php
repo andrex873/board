@@ -12,8 +12,18 @@ use Board\Transformers\BoardTransformer;
 class BoardsController extends ApiController
 {
 
+    /**
+     * Transformer for the Board entitie.
+     *
+     * @var \Board\Transformers\BoardTransformer
+     */
     protected $boardTransformer;
 
+    /**
+     * Contructor for the Board controller.
+     *
+     * @param \Board\Transformers\BoardTransformer $boardTransformer
+     */
     function __construct(BoardTransformer $boardTransformer) {
         $this->boardTransformer = $boardTransformer;
     }
@@ -78,7 +88,17 @@ class BoardsController extends ApiController
      */
     public function destroy($id)
     {
-        //
+        $board = Board::find($id);
+
+        if ( ! $board ) {
+            return $this->respondNotFound('Board does not exist');
+        }
+
+        if( ! $board->delete() ) {
+            return $this->respondServerError('Error deleting the Board, please try later');
+        }
+
+        return $this->respondSuccess([], 204);
     }
 
 }

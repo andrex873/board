@@ -5,13 +5,31 @@ namespace Board\Http\Controllers;
 
 class ApiController extends Controller {
 
+    /**
+     * HTTP status code for the response.
+     *
+     * @var integer
+     */
     protected $statusCode;
 
+    /**
+     * Generic response.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Http\Response
+     */
     public function respond(array $data) {
         return response()->json($data, $this->statusCode);
     }
 
-    public function respondSuccess ($data, $statusCode = 200) {
+    /**
+     * Respond a Success message.
+     *
+     * @param  array  $data
+     * @param  integer $statusCode
+     * @return \Illuminate\Http\Response
+     */
+    public function respondSuccess($data, $statusCode = 200) {
 
         $this->statusCode = $statusCode;
 
@@ -22,7 +40,14 @@ class ApiController extends Controller {
 
     }
 
-    public function respondNotFound ($message = 'Not found!', $statusCode = 404) {
+    /**
+     * Respond a resource not found error.
+     *
+     * @param  string  $message
+     * @param  integer $statusCode
+     * @return \Illuminate\Http\Response
+     */
+    public function respondNotFound($message = 'Not found!', $statusCode = 404) {
 
         $this->statusCode = $statusCode;
 
@@ -32,6 +57,25 @@ class ApiController extends Controller {
                         'message' => $message,
                     ]
                 ]);
+    }
+
+    /**
+     * Respond a server error.
+     *
+     * @param  string  $message
+     * @param  integer $statusCode
+     * @return \Illuminate\Http\Response
+     */
+    public function respondServerError($message = 'Internal error', $statusCode = 500) {
+
+        $this->statusCode = $statusCode;
+
+        return $this->respond([
+                'status_code' => $statusCode,
+                'error' => [
+                    'message' => $message,
+                ]
+            ]);
     }
 
 }
