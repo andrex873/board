@@ -3,6 +3,9 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
+use Board\Database\Entities\Board;
+use Board\Database\Entities\Note;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -14,7 +17,10 @@ class DatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // $this->call(UserTableSeeder::class);
+        factory(Board::class, 10)->create();
+        factory(Note::class, 80)->create();
+
+        // $this->call(BoardTableSeeder::class);
 
         Model::reguard();
     }

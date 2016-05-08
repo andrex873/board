@@ -11,11 +11,19 @@
 |
 */
 
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(Board\Database\Entities\Board::class, function (Faker\Generator $faker) {
     return [
+        'secure_id' => hash('sha256', microtime(true)),
         'name' => $faker->name,
-        'email' => $faker->safeEmail,
-        'password' => bcrypt(str_random(10)),
-        'remember_token' => str_random(10),
+    ];
+});
+
+$factory->define(Board\Database\Entities\Note::class, function (Faker\Generator $faker) {
+    return [
+        'secure_id' => hash('sha256', microtime(true)),
+        'board_id' => Board\Database\Entities\Board::all()->random()->id,
+        'type' => $faker->randomElement(['WELL', 'WRON', 'AITEM']),
+        'body' => $faker->paragraph(rand(2, 5)),
+        'votes' => rand(0, 25),
     ];
 });
