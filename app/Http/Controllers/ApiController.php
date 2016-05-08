@@ -11,7 +11,7 @@ class ApiController extends Controller {
         return response()->json($data, $this->statusCode);
     }
 
-    public function responseSuccess ($data, $statusCode = 200) {
+    public function respondSuccess ($data, $statusCode = 200) {
 
         $this->statusCode = $statusCode;
 
@@ -22,7 +22,7 @@ class ApiController extends Controller {
 
     }
 
-    public function responseNotFound ($message = 'Not found!', $statusCode = 404) {
+    public function respondNotFound ($message = 'Not found!', $statusCode = 404) {
 
         $this->statusCode = $statusCode;
 
@@ -33,6 +33,5 @@ class ApiController extends Controller {
                     ]
                 ]);
     }
-
 
 }

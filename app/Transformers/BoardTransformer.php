@@ -10,6 +10,10 @@ class BoardTransformer extends Transformer {
             'id' => $board['id'],
             'name' => $board['name'],
             'last_update' => $board['updated_at'],
+            'actions' => [
+                'show' => route('api.v1.boards.show', $board['id']),
+                'delete' => route('api.v1.boards.destroy', $board['id'])
+            ]
         ];
     }
 

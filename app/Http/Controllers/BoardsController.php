@@ -27,7 +27,7 @@ class BoardsController extends ApiController
     {
         $boards = Board::all();
 
-        return $this->responseSuccess($this->boardTransformer->fromCollection($boards->toArray()));
+        return $this->respondSuccess($this->boardTransformer->fromCollection($boards->toArray()));
     }
 
     /**
@@ -62,10 +62,10 @@ class BoardsController extends ApiController
         $board = Board::find($id);
 
         if ( ! $board ) {
-            return $this->responseNotFound('Board does not exist');
+            return $this->respondNotFound('Board does not exist');
         }
 
-        return $this->responseSuccess($this->boardTransformer->fromItem($board->toArray()));
+        return $this->respondSuccess($this->boardTransformer->fromItem($board->toArray()));
     }
 
     /**
