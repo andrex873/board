@@ -5,11 +5,11 @@ namespace Board\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Board\Database\Entities\Board;
-use Board\Http\Controllers\Controller;
+use Board\Http\Controllers\ApiController;
 use Board\Http\Requests;
 use Board\Transformers\BoardTransformer;
 
-class BoardsController extends Controller
+class BoardsController extends ApiController
 {
 
     protected $boardTransformer;
@@ -27,10 +27,7 @@ class BoardsController extends Controller
     {
         $boards = Board::all();
 
-        return response()->json([
-                'status_code' => 200,
-                'data' => $this->boardTransformer->fromCollection($boards->toArray()),
-            ], 200);
+        return $this->responseSuccess($this->boardTransformer->fromCollection($boards->toArray()));
     }
 
     /**
@@ -65,19 +62,10 @@ class BoardsController extends Controller
         $board = Board::find($id);
 
         if ( ! $board ) {
-
-            return response()->json([
-                    'error' => [
-                        'message' => 'Board does not exist',
-                        'status_code' => 404
-                    ]
-                ], 404);
+            return $this->responseNotFound('Board does not exist');
         }
 
-        return response()->json([
-                'status_code' => 200,
-                'data' => $this->boardTransformer->fromItem($board->toArray()),
-            ], 200);
+        return $this->responseSuccess($this->boardTransformer->fromItem($board->toArray()));
     }
 
     /**
