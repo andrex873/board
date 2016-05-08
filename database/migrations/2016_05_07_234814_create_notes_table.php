@@ -21,7 +21,7 @@ class CreateNotesTable extends Migration
             $table->integer('votes')->default(0);
             $table->timestamps();
 
-            $table->foreign('board_id')->references('id')->on('boards');
+            $table->foreign('board_id')->references('id')->on('boards')->onDelete('cascade');
         });
     }
 
