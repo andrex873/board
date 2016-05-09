@@ -47,7 +47,7 @@ class ApiController extends Controller {
      * @param  integer $statusCode
      * @return \Illuminate\Http\Response
      */
-    public function respondNotFound($message = 'Not found!', $statusCode = 404) {
+    public function respondError($message = 'Not found!', $statusCode = 404) {
 
         $this->statusCode = $statusCode;
 

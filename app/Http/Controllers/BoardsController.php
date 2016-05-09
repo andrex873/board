@@ -48,7 +48,21 @@ class BoardsController extends ApiController
      */
     public function store(Request $request)
     {
-        //
+        $name = $request->name;
+
+        if ( ! $name ) {
+            return $this->respondError('Client error, review the request', 400);
+        }
+
+        $board = new Board;
+        $board->name = $name;
+        $board->secure_id = generate_secure_id();
+
+        if ( ! $board->save() ) {
+            return $this->respondServerError('Error creating the Board, please try later');
+        }
+
+        return $this->respondSuccess($this->boardTransformer->fromItem($board->toArray()));
     }
 
     /**
@@ -62,7 +76,7 @@ class BoardsController extends ApiController
         $board = Board::find($id);
 
         if ( ! $board ) {
-            return $this->respondNotFound('Board does not exist');
+            return $this->respondError('Board does not exist');
         }
 
         return $this->respondSuccess($this->boardTransformer->fromItem($board->toArray()));
@@ -91,10 +105,10 @@ class BoardsController extends ApiController
         $board = Board::find($id);
 
         if ( ! $board ) {
-            return $this->respondNotFound('Board does not exist');
+            return $this->respondError('Board does not exist');
         }
 
-        if( ! $board->delete() ) {
+        if ( ! $board->delete() ) {
             return $this->respondServerError('Error deleting the Board, please try later');
         }
 

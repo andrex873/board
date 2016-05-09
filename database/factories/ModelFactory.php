@@ -13,14 +13,14 @@
 
 $factory->define(Board\Database\Entities\Board::class, function (Faker\Generator $faker) {
     return [
-        'secure_id' => hash('sha256', microtime(true)),
+        'secure_id' => generate_secure_id(),
         'name' => $faker->name,
     ];
 });
 
 $factory->define(Board\Database\Entities\Note::class, function (Faker\Generator $faker) {
     return [
-        'secure_id' => hash('sha256', microtime(true)),
+        'secure_id' => generate_secure_id(),
         'board_id' => Board\Database\Entities\Board::all()->random()->id,
         'type' => $faker->randomElement(['WELL', 'WRON', 'AITEM']),
         'body' => $faker->paragraph(rand(2, 5)),
