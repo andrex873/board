@@ -133,6 +133,7 @@ class NotesController extends ApiController
      * Remove the specified resource from storage.
      *
      * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy($boardId, $noteId)
@@ -148,6 +149,31 @@ class NotesController extends ApiController
         }
 
         return $this->respondSuccess([], 204);
+    }
+
+
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     * @param  integer $boardId
+     * @param  integer $noteId
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function votes(Request $request, $boardId, $noteId)
+    {
+        $note = Note::usingBoard($boardId, $noteId)->first();
+
+        if ( ! $note ) {
+            return $this->respondError('Note does not exist');
+        }
+
+        $note->votes = ((int) $request->get('votes', 1)) + $note->votes;
+
+        if ( ! $note->save() ) {
+            return $this->respondServerError('Error adding votes to the Note, please try later');
+        }
+
+        return $this->respondSuccess($this->noteTransformer->fromItem($note->toArray()));
     }
 
     /**

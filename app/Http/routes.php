@@ -19,5 +19,6 @@ Route::group(['prefix' => 'api/v1'], function () {
 
     Route::resource('boards', 'BoardsController', ['except' => ['create', 'edit', 'update']]);
     Route::resource('boards.notes', 'NotesController', ['except' => ['create', 'edit']]);
+    Route::put('boards/{boards}/notes/{notes}/add/votes', ['as' => 'api.v1.boards.notes.votes', 'uses' => 'NotesController@votes']);
 
 });
