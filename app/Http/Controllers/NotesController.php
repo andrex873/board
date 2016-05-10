@@ -6,27 +6,38 @@ use Illuminate\Http\Request;
 
 use Board\Http\Requests;
 use Board\Http\Controllers\Controller;
+use Board\Transformers\NoteTransformer;
+use Board\Database\Entities\Note;
 
-class NotesController extends Controller
+class NotesController extends ApiController
 {
+
+    /**
+     * Transformer for the Note entitie.
+     *
+     * @var \Board\Transformers\NoteTransformer
+     */
+    protected $noteTransformer;
+
+    /**
+     * Contructor for the Notes controller.
+     *
+     * @param \Board\Transformers\NoteTransformer $noteTransformer
+     */
+    function __construct(NoteTransformer $noteTransformer) {
+        $this->noteTransformer = $noteTransformer;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($boardId)
     {
-        //
-    }
+        $notes = Note::fromBoard($boardId)->get();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return $this->noteTransformer->fromCollection($notes->toArray());
     }
 
     /**
@@ -46,20 +57,15 @@ class NotesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($boardId, $noteId)
     {
-        //
-    }
+        $note = Note::UsingBoard($boardId, $noteId)->first();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        if ( ! $note ) {
+            return $this->respondError('Note does not exist');
+        }
+
+        return $this->respondSuccess($this->noteTransformer->fromItem($note->toArray()));
     }
 
     /**
@@ -80,8 +86,18 @@ class NotesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($boardId, $noteId)
     {
-        //
+        $note = Note::usingBoard($boardId, $noteId)->first();
+
+        if ( ! $note ) {
+            return $this->respondError('Note does not exist');
+        }
+
+        if ( ! $note->delete() ) {
+            return $this->respondServerError('Error deleting the Note, please try later');
+        }
+
+        return $this->respondSuccess([], 204);
     }
 }

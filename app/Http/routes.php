@@ -18,6 +18,6 @@ Route::get('/', function () {
 Route::group(['prefix' => 'api/v1'], function () {
 
     Route::resource('boards', 'BoardsController', ['except' => ['create', 'edit', 'update']]);
-    // Route::resource('boards.notes', 'NotesController');
+    Route::resource('boards.notes', 'NotesController', ['except' => ['create', 'edit']]);
 
 });
