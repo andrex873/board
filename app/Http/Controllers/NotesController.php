@@ -4,10 +4,12 @@ namespace Board\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Board\Http\Requests;
-use Board\Http\Controllers\Controller;
-use Board\Transformers\NoteTransformer;
+use Board\Database\Entities\Board;
 use Board\Database\Entities\Note;
+use Board\Http\Controllers\Controller;
+use Board\Http\Requests;
+use Board\Transformers\NoteTransformer;
+use Validator;
 
 class NotesController extends ApiController
 {
@@ -44,11 +46,36 @@ class NotesController extends ApiController
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  integer  $boardId
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $boardId)
     {
-        //
+        $board = Board::find($boardId);
+
+        if ( ! $board ) {
+            return $this->respondError('Board does not exist');
+        }
+
+        $validator = $this->getNoteValidator($request);
+
+        if ($validator->fails()) {
+            return $this->respondError($validator->errors()->getMessages(), 400);
+        }
+
+        $note = new Note;
+        $note->secure_id = generate_secure_id();
+        $note->board_id = $board->id;
+        $note->type = $request->type;
+        $note->body = $request->body;
+        $note->votes = $request->votes;
+
+        if ( ! $note->save() ) {
+            return $this->respondServerError('Error creating the Note, please try later');
+        }
+
+        return $this->respondSuccess($this->noteTransformer->fromItem($note->toArray()));
     }
 
     /**
@@ -99,5 +126,19 @@ class NotesController extends ApiController
         }
 
         return $this->respondSuccess([], 204);
+    }
+
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return Validator
+     */
+    private function getNoteValidator($request)
+    {
+        return Validator::make($request->all(),  [
+                    'type'  => 'required|in:' . implode(',', array_keys(get_note_types())),
+                    'body'  => 'required',
+                    'votes' => 'required|integer',
+                ]);
     }
 }
