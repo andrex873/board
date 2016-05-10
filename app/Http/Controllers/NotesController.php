@@ -58,7 +58,7 @@ class NotesController extends ApiController
             return $this->respondError('Board does not exist');
         }
 
-        $validator = $this->getNoteValidator($request);
+        $validator = $this->getStoreValidator($request);
 
         if ($validator->fails()) {
             return $this->respondError($validator->errors()->getMessages(), 400);
@@ -99,12 +99,34 @@ class NotesController extends ApiController
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  integer  $boardId
+     * @param  integer  $noteId
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $boardId, $noteId)
     {
-        //
+        $note = Note::UsingBoard($boardId, $noteId)->first();
+
+        if ( ! $note ) {
+            return $this->respondError('Note does not exist');
+        }
+
+        $validator = $this->getUpdateValidator($request);
+
+        if ($validator->fails()) {
+            return $this->respondError($validator->errors()->getMessages(), 400);
+        }
+
+        $note->type = $request->get('type', $note->type);
+        $note->body = $request->get('body', $note->body);
+        $note->votes = $request->get('votes', $note->votes);
+
+        if ( ! $note->save() ) {
+            return $this->respondServerError('Error editing the Note, please try later');
+        }
+
+        return $this->respondSuccess($this->noteTransformer->fromItem($note->toArray()));
     }
 
     /**
@@ -133,12 +155,26 @@ class NotesController extends ApiController
      *
      * @return Validator
      */
-    private function getNoteValidator($request)
+    private function getStoreValidator($request)
     {
         return Validator::make($request->all(),  [
                     'type'  => 'required|in:' . implode(',', array_keys(get_note_types())),
                     'body'  => 'required',
                     'votes' => 'required|integer',
+                ]);
+    }
+
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     *
+     * @return Validator
+     */
+    private function getUpdateValidator($request)
+    {
+        return Validator::make($request->all(),  [
+                    'type'  => 'in:' . implode(',', array_keys(get_note_types())),
+                    'body'  => '',
+                    'votes' => 'integer',
                 ]);
     }
 }
