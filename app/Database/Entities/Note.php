@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Note extends Model
 {
-    //
 
     /**
-     * @param  [type] $query
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function board() {
+        return $this->belongsTo(Board::class);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @param  integer $board_Id
      *
      * @return \Illuminate\Database\Eloquent\Builder
@@ -19,7 +25,7 @@ class Note extends Model
     }
 
     /**
-     * @param  [type] $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
      * @param  integer $board_id
      * @param  integer $id
      *
