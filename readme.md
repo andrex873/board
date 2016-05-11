@@ -172,7 +172,7 @@ To create a new Note that belongs to a Board, send a `POST` request to `/api/v1/
     <tr>
         <td>type</td>
         <td>string</td>
-        <td>One of this values `WELL`, `WRON` or `AITEM`</td>
+        <td>One of this values 'WELL', 'WRON' or 'AITEM'</td>
     </tr>
     <tr>
         <td>body</td>
@@ -240,7 +240,7 @@ To update a Note that belongs to a Board, send a `PUT` request to `/api/v1/board
     <tr>
         <td>type</td>
         <td>(optional) string</td>
-        <td>One of this values `WELL`, `WRON` or `AITEM`</td>
+        <td>One of this values 'WELL', 'WRON' or 'AITEM'</td>
     </tr>
     <tr>
         <td>body</td>
@@ -286,7 +286,7 @@ To add votes to a Note that belongs to a Board, send a `PUT` request to `/api/v1
     <tr>
         <td>votes</td>
         <td>(optional) numeric</td>
-        <td>The number of the votes to add to the Note. If the votes value is not present the default value is going to be `1`. If you want substrac votes, send negative values like `-1`...`-5`...`-n`.</td>
+        <td>The number of the votes to add to the Note. If the votes value is not present the default value is going to be 1. If you want substrac votes, send negative values like -1 ... -5 ... -n.</td>
     </tr>
 </table>
 
