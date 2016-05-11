@@ -39,7 +39,7 @@ class NotesController extends ApiController
     {
         $notes = Note::fromBoard($boardId)->get();
 
-        return $this->noteTransformer->fromCollection($notes->toArray());
+        return $this->respondSuccess($this->noteTransformer->fromCollection($notes->toArray()));
     }
 
     /**
