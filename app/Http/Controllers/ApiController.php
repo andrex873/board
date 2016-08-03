@@ -13,13 +13,22 @@ class ApiController extends Controller {
     protected $statusCode;
 
     /**
+     * JSONP name of the callback if present
+     * @var string
+     */
+    protected $jsonpCallback;
+
+    /**
      * Generic response.
      *
      * @param  array  $data
      * @return \Illuminate\Http\Response
      */
-    public function respond(array $data) {
-        return response()->json($data, $this->statusCode);
+    public function respond(array $data)
+    {
+        return ($this->jsonpCallback)
+            ? "{$this->jsonpCallback}(" . json_encode($data) . ")"
+            : response()->json($data, $this->statusCode);
     }
 
     /**
@@ -29,15 +38,15 @@ class ApiController extends Controller {
      * @param  integer $statusCode
      * @return \Illuminate\Http\Response
      */
-    public function respondSuccess($data, $statusCode = 200) {
-
+    public function respondSuccess($data, $statusCode = 200, $jsonpCallback = null)
+    {
         $this->statusCode = $statusCode;
+        $this->jsonpCallback = $jsonpCallback;
 
         return $this->respond([
-                    'status_code' => $statusCode,
-                    'data' => $data,
-                ]);
-
+                'status_code' => $statusCode,
+                'data' => $data,
+            ]);
     }
 
     /**
@@ -47,9 +56,10 @@ class ApiController extends Controller {
      * @param  integer $statusCode
      * @return \Illuminate\Http\Response
      */
-    public function respondError($message = 'Not found!', $statusCode = 404) {
-
+    public function respondError($message = 'Not found!', $statusCode = 404, $jsonpCallback = null)
+    {
         $this->statusCode = $statusCode;
+        $this->jsonpCallback = $jsonpCallback;
 
         return $this->respond([
                     'status_code' => $statusCode,
@@ -66,9 +76,10 @@ class ApiController extends Controller {
      * @param  integer $statusCode
      * @return \Illuminate\Http\Response
      */
-    public function respondServerError($message = 'Internal error', $statusCode = 500) {
-
+    public function respondServerError($message = 'Internal error', $statusCode = 500, $jsonpCallback = null)
+    {
         $this->statusCode = $statusCode;
+        $this->jsonpCallback = $jsonpCallback;
 
         return $this->respond([
                 'status_code' => $statusCode,

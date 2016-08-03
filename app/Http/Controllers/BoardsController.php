@@ -31,13 +31,18 @@ class BoardsController extends ApiController
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $boards = Board::all();
 
-        return $this->respondSuccess($this->boardTransformer->fromCollection($boards->toArray()));
+        return $this->respondSuccess(
+            $this->boardTransformer->fromCollection($boards->toArray()),
+            200,
+            $this->getCallback($request)
+            );
     }
 
     /**
@@ -51,7 +56,7 @@ class BoardsController extends ApiController
         $name = $request->name;
 
         if ( ! $name ) {
-            return $this->respondError('Client error, review the request', 400);
+            return $this->respondError('Client error, review the request', 400, $this->getCallback($request));
         }
 
         $board = new Board;
@@ -68,10 +73,11 @@ class BoardsController extends ApiController
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $board = Board::find($id);
 
@@ -79,28 +85,44 @@ class BoardsController extends ApiController
             return $this->respondError('Board does not exist');
         }
 
-        return $this->respondSuccess($this->boardTransformer->fromItem($board->toArray()));
+        return $this->respondSuccess(
+            $this->boardTransformer->fromItem($board->toArray()),
+            200,
+            $this->getCallback($request)
+            );
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $board = Board::find($id);
 
         if ( ! $board ) {
-            return $this->respondError('Board does not exist');
+            return $this->respondError('Board does not exist', 404, $this->getCallback($request));
         }
 
         if ( ! $board->delete() ) {
-            return $this->respondServerError('Error deleting the Board, please try later');
+            return $this->respondServerError('Error deleting the Board, please try later', 500, $this->getCallback($request));
         }
 
-        return $this->respondSuccess([], 204);
+        return $this->respondSuccess([], 204, $this->getCallback($request));
+    }
+
+    /**
+     * Get the callback name if the request is JSONP
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return string|null
+     */
+    private function getCallback($request)
+    {
+        return $request->has('callback') ? $request->callback : null;
     }
 
 }
